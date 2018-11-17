@@ -29,6 +29,7 @@
   "author": "Ihor Ost",
   "license": "MIT",
   "dependencies": {
+    "@blueprintjs/core": "3.9.0",
     "connected-react-router": "4.4.1",
     "object-assign": "4.1.1",
     "react": "16.4.2",
