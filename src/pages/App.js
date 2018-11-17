@@ -3,6 +3,9 @@ import { hot } from 'react-hot-loader';
 import { Route, Switch } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Hello from '../components/Hello';
+import LoginForm from './LoginForm';
+
+import { ROUTES } from '../constants';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class App extends Component {
@@ -11,6 +14,7 @@ class App extends Component {
       <Layout {...this.props}>
         <Switch>
           <Route path='/hello' component={() => <Hello test='test' />} />
+          <Route path={ROUTES.LOGIN} component={LoginForm} />
         </Switch>
       </Layout>
     );

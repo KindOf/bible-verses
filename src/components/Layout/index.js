@@ -1,6 +1,6 @@
 import React from 'react';
 
-// import Header from '../Header';
+import Header from '../Header';
 // import  Footer  from '../Footer';
 // import Snack  from '../Snack';
 
@@ -12,7 +12,7 @@ const Layout = props => {
   // return null
   return (
     <div className="layout-holder">
-      {/* <Header {...props} /> */}
+      <Header {...props} />
       <div className="layout-body">
         {children}
       </div>
