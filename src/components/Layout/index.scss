@@ -1,0 +1,17 @@
+body {
+  background: #fafafa;
+  color: #212121;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto';
+}
+.layout-holder {
+  padding-top: 80px;
+  background: #eeeeee;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.layout-body {
+  flex-grow: 1;
+}
