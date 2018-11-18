@@ -25,6 +25,7 @@ const LoginForm = ({ handleSubmit, signIn }) => {
           <h2>Login</h2>
           <form onSubmit={handleSubmit(submit)}>
             <Field
+              large
               component={FormTextInput}
               name="email"
               placeholder="email@example.com"
@@ -32,6 +33,7 @@ const LoginForm = ({ handleSubmit, signIn }) => {
               validate={[ required, validateEmail ]}
             />
             <Field
+              large
               component={FormTextInput}
               name="password"
               placeholder="*******"

@@ -9,18 +9,20 @@ const FormTextInput = ({
   placeholder,
   type = 'text',
   meta: { touched, error, invalid },
+  formGroupProps,
   ...custom
 }) => (
   <FormGroup
     label={label}
     intent={ touched && invalid ? 'danger' : 'none'}
     helperText={touched && invalid && error}
-    {...custom}
+    {...formGroupProps}
   >
     <InputGroup
-      {...input}
       placeholder={placeholder}
       type={type}
+      {...input}
+      {...custom}
     />
   </FormGroup>
 );
