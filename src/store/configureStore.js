@@ -41,7 +41,12 @@ function configureStoreDev(initialState) {
     // Add other middleware on this line...
 
     // Redux middleware that spits an error on you when you try to mutate your state either inside a dispatch or between dispatches.
-    reduxImmutableStateInvariant(),
+    reduxImmutableStateInvariant({
+      ignore: [
+        // Because redux immutable state cannot handle file changes in redux-form => https://github.com/leoasis/redux-immutable-state-invariant/issues/38
+        'form.versesForm.values.voiceFile'        
+      ]
+    }),
 
     // thunk middleware can also accept an extra argument to be passed to each thunk action
     // https://github.com/reduxjs/redux-thunk#injecting-a-custom-argument
