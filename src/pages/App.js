@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { hot } from 'react-hot-loader';
 import { Route, Switch } from 'react-router-dom';
+
 import Layout from '../components/Layout';
-import Hello from '../components/Hello';
+import { PrivateRoute } from '../components';
 import LoginForm from './LoginForm';
+import VersesForm from './VersesForm';
 
 import { ROUTES } from '../constants';
 
@@ -11,10 +13,10 @@ import { ROUTES } from '../constants';
 class App extends Component {
   render() {
     return (
-      <Layout {...this.props}>
+      <Layout>
         <Switch>
-          <Route path='/hello' component={() => <Hello test='test' />} />
           <Route path={ROUTES.LOGIN} component={LoginForm} />
+          <PrivateRoute path={ROUTES.VERSES_FORM} component={VersesForm} />
         </Switch>
       </Layout>
     );

@@ -1,10 +1,11 @@
 // Set up your root reducer here...
  import { combineReducers } from 'redux';
  import { reducer as formReducer } from 'redux-form';
+ import globalReducer from './global';
  import authReducer from './auth';
 
 const rootReducer = combineReducers({
-    // default: (state = { test: 'value' }) => state,
+    global: globalReducer,
     form: formReducer,
     auth: authReducer
   });

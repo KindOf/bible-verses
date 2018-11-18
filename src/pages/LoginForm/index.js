@@ -1,4 +1,6 @@
 import React from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
 import {
   Card, Elevation, Button
@@ -6,18 +8,22 @@ import {
 
 import { PageWrapper } from '../../components';
 import FormTextInput from '../../components/Form/FormTextInput';
-
+import { authSignIn } from '../../actions';
 import { required, validateEmail } from '../../utils/validators';
 
 import './index.scss';
 
-const LoginForm = () => {
+const LoginForm = ({ handleSubmit, signIn }) => {
+  const submit = values => {
+    signIn(values);
+  }
+
   return (
     <PageWrapper>
       <div className="login-form">
         <Card elevation={Elevation.TWO}>
           <h2>Login</h2>
-          <form>
+          <form onSubmit={handleSubmit(submit)}>
             <Field
               component={FormTextInput}
               name="email"
@@ -46,6 +52,20 @@ const LoginForm = () => {
   )
 }
 
-export default reduxForm({
-  form: 'loginForm'
-})(LoginForm);
+const mapStateToProps = state => ({
+
+})
+
+const mapDispatchToProps = dispatch => ({
+  signIn: data => dispatch(authSignIn(data).request)
+})
+
+export default compose(
+  reduxForm({
+    form: 'loginForm'
+  }),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(LoginForm);

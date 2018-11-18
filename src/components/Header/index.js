@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Alignment, Button } from '@blueprintjs/core';
 
-const Header = () => {
+const Header = ({ user, signOut }) => {
   return (
     <Navbar fixedToTop>
       <Navbar.Group align={Alignment.LEFT}>
@@ -9,7 +9,18 @@ const Header = () => {
         <Navbar.Divider />
       </Navbar.Group>
       <Navbar.Group align={Alignment.RIGHT}>
-        <Button className="bp3-minimal" icon="document" text="Logout" />
+        {
+          user 
+            ? (
+              <Button
+                intent="success"
+                icon="document"
+                text="Logout"
+                onClick={() => signOut()}
+              />
+            )
+            : null
+        }
       </Navbar.Group>
     </Navbar>
   )

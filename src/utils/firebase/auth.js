@@ -7,3 +7,5 @@ export const doSignIn = (email, password) =>
 // Sign out
 export const doSignOut = () =>
   auth.signOut();
+
+export const onAuthStateChage = cb => auth.onAuthStateChanged(cb);
