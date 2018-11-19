@@ -1,8 +1,8 @@
 export default {
-  apiKey: "AIzaSyD83MvmnrpDrq1kWT_FLC1W_IV0okla5Iw",
-  authDomain: "bible-verses-dev.firebaseapp.com",
-  databaseURL: "https://bible-verses-dev.firebaseio.com",
-  projectId: "bible-verses-dev",
-  storageBucket: "bible-verses-dev.appspot.com",
-  messagingSenderId: "226531618670"
+  apiKey: `${process.env.API_KEY}`,
+  authDomain: `${process.env.AUTH_DOMAIN}`,
+  databaseURL: `${process.env.DATABASE_URL}`,
+  projectId: `${process.env.PROJECT_ID}`,
+  storageBucket: `${process.env.STORAGE_BUCKET}`,
+  messagingSenderId: `${process.env.MESSAGING_SENDER_ID}`
 };

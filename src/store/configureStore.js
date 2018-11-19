@@ -44,7 +44,9 @@ function configureStoreDev(initialState) {
     reduxImmutableStateInvariant({
       ignore: [
         // Because redux immutable state cannot handle file changes in redux-form => https://github.com/leoasis/redux-immutable-state-invariant/issues/38
-        'form.versesForm.values.voiceFile'        
+        'form.versesForm.values.soundFile',
+        'form.versesForm.values.bigPicture',
+        'form.versesForm.values.smallPicture'
       ]
     }),
 
