@@ -16,7 +16,11 @@ export default {
     extensions: ['*', '.js', '.jsx', '.json']
   },
   devtool: 'source-map', // more info:https://webpack.js.org/guides/production/#source-mapping and https://webpack.js.org/configuration/devtool/
-  entry: path.resolve(__dirname, 'src/index'),
+  // entry: path.resolve(__dirname, 'src/index'),
+  entry: [
+    '@babel/polyfill',
+    path.resolve(__dirname, 'src/index.js') // Defining path seems necessary for this to work consistently on Windows machines.
+  ],
   target: 'web',
   mode: 'production',
   output: {

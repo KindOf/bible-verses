@@ -1,7 +1,5 @@
 import {
-  CATEGORIES_GET_REQUEST,
   CATEGORIES_GET_SUCCESS,
-  CATEGORIES_GET_FAILURE
 } from '../constants/actionTypes';
 
 const initialState = {

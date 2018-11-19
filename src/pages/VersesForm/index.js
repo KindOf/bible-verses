@@ -3,7 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
 import styled from 'styled-components';
-import { ControlGroup, Button, Label, ButtonGroup } from '@blueprintjs/core';
+import { ControlGroup, Button, ButtonGroup } from '@blueprintjs/core';
 
 import { PageWrapper } from '../../components';
 import {
@@ -33,6 +33,7 @@ class VersesForm extends Component {
 
   createVerse = values => {
     const { createVerse } = this.props;
+    // eslint-disable-next-line
     const { bigPicture, smallPicture, soundFile, ...verse } = values
     createVerse(verse)
   }

@@ -54,7 +54,7 @@ const LoginForm = ({ handleSubmit, signIn }) => {
   )
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = () => ({
 
 })
 

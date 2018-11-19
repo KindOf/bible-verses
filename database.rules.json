@@ -1,0 +1,28 @@
+// {
+//   "rules": {
+//     ".read": true,
+//     ".write": true
+//   }
+// }
+
+
+{
+	"rules": {
+    "users": {
+      ".read": "auth !== null",
+      ".write": "auth !== null"
+    },
+	  "verses": {
+      ".read": "auth != null",
+      ".write": "root.child('users').child(auth.uid).child('role').val() == 'admin'",
+	  },
+	  "categories": {
+		  ".read": "auth != null",
+		  ".write": "root.child('users').child(auth.uid).child('role').val() == 'admin'"
+	  },
+    "settings": {
+		  ".read": "auth != null",
+		  ".write": false
+	  },
+	}
+}
