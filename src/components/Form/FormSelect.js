@@ -7,10 +7,10 @@ const FormTextArea = ({
   input,
   ...custom
 }) => (
-    <HTMLSelect
-      {...input}
-      {...custom}
-    />
+  <HTMLSelect
+    {...input}
+    {...custom}
+  />
 );
 
 export default FormTextArea;

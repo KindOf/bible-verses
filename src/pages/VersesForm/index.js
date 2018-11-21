@@ -7,9 +7,11 @@ import { ControlGroup, Button, ButtonGroup } from '@blueprintjs/core';
 
 import { PageWrapper } from '../../components';
 import {
-  FormTextInput, FormSwitcher, FormTextArea, FormSelect, FormFileInput
+  FormTextInput, FormSwitcher, FormTextArea, FormSelectGroup, FormFileInput
 } from '../../components/Form';
-import { getCategories, createVerses } from '../../actions';
+import { getCategories, createVerses, getVerses } from '../../actions';
+import { generateRandomKey } from '../../utils';
+import { required } from '../../utils/validators';
 
 const FlexBox = styled.div`
   display: flex;
@@ -21,20 +23,20 @@ const StyledControlGroup = styled(ControlGroup)`
   label {
     display: flex;
     align-items: center;
-    padding-right: 8px;
+    // padding-right: 8px;
   }
 `;
 
 class VersesForm extends Component {
   componentDidMount() {
-    const { categoriesGet } = this.props;
+    const { categoriesGet, versesGet } = this.props;
     categoriesGet();
+    versesGet()
   }
 
-  createVerse = values => {
+  createVerse = verse => {
     const { createVerse } = this.props;
-    // eslint-disable-next-line
-    const { bigPicture, smallPicture, soundFile, ...verse } = values
+
     createVerse(verse)
   }
 
@@ -43,7 +45,9 @@ class VersesForm extends Component {
     return (
       <PageWrapper>
         <h1>Bible Verses</h1>
-        <form onSubmit={handleSubmit(this.createVerse)}>
+        <form
+          onSubmit={handleSubmit(this.createVerse)}
+        >
           <FlexBox justify="center">
             <ButtonGroup>
               <Button
@@ -84,19 +88,18 @@ class VersesForm extends Component {
               formGroupProps={{ inline: true }}
             />
           </FlexBox>
-          <StyledControlGroup>
-            <label htmlFor="category">Category</label>
-            <Field
-              fill
-              large
-              id="category"
-              name="category"
-              component={FormSelect}
-              formGroupProps={{ inline: true }}
-              options={categories}
-            />
+          <Field
+            fill
+            large
+            id="category"
+            name="category"
+            component={FormSelectGroup}
+            formGroupProps={{ inline: true }}
+            options={[ { label: '' }, ...categories]}
+            validate={[ required ]}
+          >
             <Button intent="success">Manage Categories</Button>
-          </StyledControlGroup>
+          </Field>
           <Field
             large
             component={FormTextInput}
@@ -137,7 +140,7 @@ class VersesForm extends Component {
             fill
             large
             component={FormTextArea}
-            name="devotionText"
+            name="note"
             label="Devotion Text"
           />
           <h3>Images</h3>
@@ -164,17 +167,18 @@ class VersesForm extends Component {
 }
 
 const mapStateToProps = state => ({
-  categories: Object.keys(state.categories.data).map(cat => ({ label: cat, value: cat }))
+  categories: Object.keys(state.categories.data).map(cat => ({ label: cat, value: cat })),
 });
 
 const mapDispatchToProps = dispatch => ({
   categoriesGet: () => dispatch(getCategories().request),
-  createVerse: data => dispatch(createVerses(data).request)
+  createVerse: data => dispatch(createVerses(data).request),
+  versesGet: () => dispatch(getVerses().request),
 })
 
 export default compose(
   reduxForm({
-    form: 'versesForm'
+    form: 'versesForm',
   }),
   connect(
     mapStateToProps,

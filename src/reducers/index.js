@@ -4,12 +4,14 @@
  import globalReducer from './global';
  import authReducer from './auth';
  import categories from './categories';
+ import verses from './verses';
 
 const rootReducer = combineReducers({
     global: globalReducer,
     form: formReducer,
     auth: authReducer,
     categories,
+    verses,
   });
   
   export default rootReducer;
