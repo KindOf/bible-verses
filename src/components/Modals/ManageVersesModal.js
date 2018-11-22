@@ -6,7 +6,7 @@ import { generateRandomKey } from '../../utils';
 
 const versesModal = 'verses-modal';
 
-const ManageVersesModal = ({ verses, deleting, verseDelete }) => {
+const ManageVersesModal = ({ verses, deleting, verseDelete, loadVerse }) => {
   return (
     <DialogModal
       title="Verses"
@@ -20,13 +20,21 @@ const ManageVersesModal = ({ verses, deleting, verseDelete }) => {
               key={generateRandomKey()}
               text={verses[key].verseNumber}
               labelElement={
-                <Button
-                  minimal
-                  icon="trash"
-                  intent="danger"
-                  loading={deleting === key}
-                  onClick={() => verseDelete({ id: key, verse: verses[key] })}
-                />
+                <React.Fragment>
+                  <Button
+                    minimal
+                    icon="download"
+                    intent="success"
+                    onClick={() => loadVerse(key)}
+                  />
+                  <Button
+                    minimal
+                    icon="trash"
+                    intent="danger"
+                    loading={deleting === key}
+                    onClick={() => verseDelete({ id: key, verse: verses[key] })}
+                  />
+                </React.Fragment>
               }
             />
           ))

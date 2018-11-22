@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { reduxForm, Field } from 'redux-form';
+import { reduxForm, Field, formValueSelector } from 'redux-form';
 import styled from 'styled-components';
-import { ControlGroup, Button, ButtonGroup, Menu, MenuItem } from '@blueprintjs/core';
+import { ControlGroup, Button, ButtonGroup, Icon } from '@blueprintjs/core';
 
-import { PageWrapper, DialogModal } from '../../components';
+import { PageWrapper } from '../../components';
 import { ManageVersesModal } from '../../components/Modals';
 import {
   FormTextInput, FormSwitcher, FormTextArea, FormSelectGroup, FormFileInput
 } from '../../components/Form';
 import {
-  getCategories, createVerses, getVerses, deleteVerse, toggleDialog
+  getCategories, createVerses, getVerses, deleteVerse, toggleDialog, setFormValues, updateVerses
 } from '../../actions';
 import { generateRandomKey } from '../../utils';
 import { required } from '../../utils/validators';
@@ -22,11 +21,9 @@ const FlexBox = styled.div`
   justify-content: ${props => props.justify || 'flex-start'}
 `;
 
-const StyledControlGroup = styled(ControlGroup)`
-  label {
-    display: flex;
-    align-items: center;
-    // padding-right: 8px;
+const StyledTickIcon = styled(Icon)`
+  && {
+    margin-left: 16px;
   }
 `;
 
@@ -40,14 +37,29 @@ class VersesForm extends Component {
   }
 
   createVerse = verse => {
-    const { createVerse } = this.props;
+    const { createVerse, selectedVerseKey, verseUpdate, verses } = this.props;
 
-    createVerse(verse)
+    if (selectedVerseKey) {
+      verseUpdate({
+        oldVerse: verses[selectedVerseKey],
+        verse,
+        selectedVerseKey
+      });
+    } else {
+      createVerse(verse)
+    }
+  }
+
+  loadVerse = key => {
+    const { modalToggle, loadVersesForm } = this.props;
+    loadVersesForm(key);
+    modalToggle(null)
   }
 
   render() {
     const {
-      reset, categories, handleSubmit, verses, modalToggle, verseDelete, deleting
+      categories, handleSubmit, verses, modalToggle, verseDelete, deleting, loadVersesForm,
+      isBigPicturePresent, isSmallPicturePresent, isSoundFilePresent, reset
     } = this.props;
     return (
       <PageWrapper>
@@ -74,7 +86,7 @@ class VersesForm extends Component {
               <Button
                 intent="primary"
                 rightIcon="document"
-                onClick={reset}
+                onClick={() => {loadVersesForm(); reset()}}
               >
                 New Verse
               </Button>
@@ -118,13 +130,6 @@ class VersesForm extends Component {
             <label htmlFor="videoUrl">Video Url</label>
             <Field
               large
-              component={FormSwitcher}
-              name="isVideoPremium"
-              label="Premium"
-              formGroupProps={{ inline: true }}
-            />
-            <Field
-              large
               component={FormTextInput}
               name="videoUrl"
               placeholder="Vimeo or YouTube link"
@@ -136,6 +141,13 @@ class VersesForm extends Component {
             component={FormFileInput}
             name="soundFile"
             label="Voice File"
+            formGroupProps={{
+              labelInfo: (
+                <span className="bp3-text-muted">
+                  {isSoundFilePresent && <StyledTickIcon icon='tick' intent='success' />}
+                </span>
+              )
+            }}
           />
           <Field
             fill
@@ -158,7 +170,14 @@ class VersesForm extends Component {
             component={FormFileInput}
             name="bigPicture"
             label="HD Image"
-            formGroupProps={{ labelInfo: "(1280x720)" }}
+            formGroupProps={{
+              labelInfo: (
+                <span className="bp3-text-muted">
+                  (1280x720)
+                  {isBigPicturePresent && <StyledTickIcon icon='tick' intent='success' />}
+                </span>
+              )
+            }}
           />
           <Field
             fill
@@ -166,39 +185,57 @@ class VersesForm extends Component {
             component={FormFileInput}
             name="smallPicture"
             label="Square Image"
-            formGroupProps={{ labelInfo: "(720x720)" }}
+            formGroupProps={{
+              labelInfo: (
+                <span className="bp3-text-muted">
+                  (720x720)
+                  {isSmallPicturePresent && <StyledTickIcon icon='tick' intent='success' />}
+                </span>
+              )
+            }}
           />
         </form>
         <ManageVersesModal
           verses={verses}
           deleting={deleting}
           verseDelete={verseDelete}
+          loadVerse={this.loadVerse}
         />
       </PageWrapper>
     )
   }
 }
 
+const selector = formValueSelector('versesForm');
+
 const mapStateToProps = state => ({
   categories: Object.keys(state.categories.data).map(cat => ({ label: cat, value: cat })),
   verses: state.verses.data,
+  selectedVerseKey: state.verses.selectedVerseKey,
   deleting: state.verses.deleting,
+  initialValues: state.verses.formInitialValues,
+  isBigPicturePresent: selector(state, 'bigPicture') !== '',
+  isSmallPicturePresent: selector(state, 'smallPicture') !== '',
+  isSoundFilePresent: selector(state, 'soundFile') !== '',
 });
 
 const mapDispatchToProps = dispatch => ({
   categoriesGet: () => dispatch(getCategories().request),
   createVerse: data => dispatch(createVerses(data).request),
+  verseUpdate: data => dispatch(updateVerses(data).request),
   versesGet: () => dispatch(getVerses().request),
   verseDelete: data => dispatch(deleteVerse(data).request),
   modalToggle: id => dispatch(toggleDialog(id)),
-})
+  loadVersesForm: key => dispatch(setFormValues(key)),
+});
 
-export default compose(
-  reduxForm({
-    form: 'versesForm',
-  }),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(VersesForm);
+
+const WrappedVersesForm = reduxForm({
+  form: 'versesForm',
+  enableReinitialize: true,
+})(VersesForm);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WrappedVersesForm);
