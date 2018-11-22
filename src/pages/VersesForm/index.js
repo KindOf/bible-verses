@@ -2,17 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Field, formValueSelector } from 'redux-form';
 import styled from 'styled-components';
-import { ControlGroup, Button, ButtonGroup, Icon } from '@blueprintjs/core';
+import { Button, ButtonGroup, Icon } from '@blueprintjs/core';
 
 import { PageWrapper } from '../../components';
-import { ManageVersesModal } from '../../components/Modals';
+import { ManageVersesModal, ManageCategoriesModal } from '../../components/Modals';
 import {
   FormTextInput, FormSwitcher, FormTextArea, FormSelectGroup, FormFileInput
 } from '../../components/Form';
 import {
-  getCategories, createVerses, getVerses, deleteVerse, toggleDialog, setFormValues, updateVerses
+  getCategories, createVerses, getVerses, deleteVerse, toggleDialog, setFormValues, updateVerses, createCategory, deleteCategory
 } from '../../actions';
-import { generateRandomKey } from '../../utils';
 import { required } from '../../utils/validators';
 
 const FlexBox = styled.div`
@@ -28,6 +27,7 @@ const StyledTickIcon = styled(Icon)`
 `;
 
 const versesModal = 'verses-modal';
+const categoriesModal = 'categories-modal';
 
 class VersesForm extends Component {
   componentDidMount() {
@@ -58,8 +58,9 @@ class VersesForm extends Component {
 
   render() {
     const {
-      categories, handleSubmit, verses, modalToggle, verseDelete, deleting, loadVersesForm,
-      isBigPicturePresent, isSmallPicturePresent, isSoundFilePresent, reset
+      categoriesTitles, categories, handleSubmit, verses, modalToggle, verseDelete, deleting, loadVersesForm,
+      isBigPicturePresent, isSmallPicturePresent, isSoundFilePresent, reset, categoryCreate,
+      categoryDelete
     } = this.props;
     return (
       <PageWrapper>
@@ -115,10 +116,15 @@ class VersesForm extends Component {
             name="category"
             component={FormSelectGroup}
             formGroupProps={{ inline: true }}
-            options={[ { label: '' }, ...categories]}
+            options={[ { label: '' }, ...categoriesTitles]}
             validate={[ required ]}
           >
-            <Button intent="success">Manage Categories</Button>
+            <Button
+              intent="success"
+              onClick={() => modalToggle(categoriesModal)}
+            >
+              Manage Categories
+            </Button>
           </Field>
           <Field
             large
@@ -201,6 +207,11 @@ class VersesForm extends Component {
           verseDelete={verseDelete}
           loadVerse={this.loadVerse}
         />
+        <ManageCategoriesModal
+          categories={categories}
+          categoryCreate={categoryCreate}
+          categoryDelete={categoryDelete}
+        />
       </PageWrapper>
     )
   }
@@ -209,7 +220,8 @@ class VersesForm extends Component {
 const selector = formValueSelector('versesForm');
 
 const mapStateToProps = state => ({
-  categories: Object.keys(state.categories.data).map(cat => ({ label: cat, value: cat })),
+  categoriesTitles: Object.keys(state.categories.data).map(cat => ({ label: cat, value: cat })),
+  categories: state.categories.data,
   verses: state.verses.data,
   selectedVerseKey: state.verses.selectedVerseKey,
   deleting: state.verses.deleting,
@@ -221,6 +233,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   categoriesGet: () => dispatch(getCategories().request),
+  categoryCreate: ({ key }) => dispatch(createCategory(key).request),
+  categoryDelete: data => dispatch(deleteCategory(data).request),
   createVerse: data => dispatch(createVerses(data).request),
   verseUpdate: data => dispatch(updateVerses(data).request),
   versesGet: () => dispatch(getVerses().request),

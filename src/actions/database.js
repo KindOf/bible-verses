@@ -2,6 +2,12 @@ import {
   CATEGORIES_GET_REQUEST,
   CATEGORIES_GET_SUCCESS,
   CATEGORIES_GET_FAILURE,
+  CATEGORIES_CREATE_REQUEST,
+  CATEGORIES_CREATE_SUCCESS,
+  CATEGORIES_CREATE_FAILURE,
+  CATEGORIES_DELETE_REQUEST,
+  CATEGORIES_DELETE_SUCCESS,
+  CATEGORIES_DELETE_FAILURE,
   VERSES_CREATE_REQUEST,
   VERSES_CREATE_SUCCESS,
   VERSES_CREATE_FAILURE,
@@ -21,6 +27,18 @@ export const getCategories = data => ({
   request: { type: CATEGORIES_GET_REQUEST, payload: data },
   success: { type: CATEGORIES_GET_SUCCESS, payload: data },
   failure: { type: CATEGORIES_GET_FAILURE, payload: data },
+});
+
+export const createCategory = data => ({
+  request: { type: CATEGORIES_CREATE_REQUEST, payload: data },
+  success: { type: CATEGORIES_CREATE_SUCCESS, payload: data },
+  failure: { type: CATEGORIES_CREATE_FAILURE, payload: data },
+});
+
+export const deleteCategory = data => ({
+  request: { type: CATEGORIES_DELETE_REQUEST, payload: data },
+  success: { type: CATEGORIES_DELETE_SUCCESS, payload: data },
+  failure: { type: CATEGORIES_DELETE_FAILURE, payload: data },
 });
 
 export const createVerses = data => ({

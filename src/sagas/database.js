@@ -2,14 +2,18 @@ import { call, put, takeLatest, all, take } from 'redux-saga/effects';
 
 import {
   getCategories, createVerses, toggleLoading, getVerses, deleteVerse, updateVerses,
-  setFormValues
+  setFormValues, createCategory, deleteCategory
 } from '../actions';
 
 import { rsf } from '../utils/firebase/firebase';
 import { resourceRef } from '../utils/firebase/storage';
+import { getRef } from '../utils/firebase'
+import { AppToaster } from '../utils/Toaster';
 
 import {
   CATEGORIES_GET_REQUEST,
+  CATEGORIES_CREATE_REQUEST,
+  CATEGORIES_DELETE_REQUEST,
   VERSES_CREATE_REQUEST,
   VERSES_UPDATE_REQUEST,
   VERSES_GET_REQUEST,
@@ -24,6 +28,40 @@ function* syncCategoriesSaga() {
   while(true) {
     const { value: categories } = yield take(channel);
     yield put(getCategories(categories).success);
+  }
+}
+
+function* createCategorySaga({ payload }) {
+  const categoryPath = `categories/${payload}`;
+  try {
+    const key = yield call(setData, categoryPath, { initial: true });
+    AppToaster.show({ message: 'Category created.', intent: 'success', timeout: 2000 });
+    yield put(createCategory(key).success);
+  } catch(e) {
+    AppToaster.show({ message: e.message, intent: 'danger' });
+    yield put(createCategory(e).failure);
+  }
+
+}
+
+function* deleteCategorySaga({ payload }) {
+  const { key, category } = payload;
+  const categoryPath = `categories/${key}`;
+
+  const isCategoryEmpty = Object.keys(category).length === 1
+    && Object.keys(category)[0] === 'initial';
+
+  try {
+    if (!isCategoryEmpty) {
+      throw new Error('Category is not empty');
+    }
+
+    yield call(rsf.database.delete, categoryPath);
+    AppToaster.show({ message: 'Category deleted.', intent: 'success', timeout: 2000 });
+    yield put(deleteCategory().success);
+  } catch (e) {
+    AppToaster.show({ message: e.message, intent: 'danger' });
+    yield put(deleteCategory().failure);
   }
 }
 
@@ -56,9 +94,11 @@ function* addVerse({ payload }) {
     yield put(createVerses(key).success);
     yield put(setFormValues());
     yield put(toggleLoading(false));
+    AppToaster.show({ message: 'Verse created', intent: 'success', timeout: 2000 });
   } catch (e) {
     yield put(createVerses(e.message).failure);
     yield put(toggleLoading(false));
+    AppToaster.show({ message: e.message, intent: 'danger' });
   }
 }
 
@@ -94,6 +134,7 @@ function* updateVerseSaga({ payload }) {
 
     if (oldVerse.category !== verse.category) {
       const oldCategory = yield call(rsf.database.read, `categories/${oldVerse.category}`);
+      // eslint-disable-next-line no-unused-vars
       const { selectedVerseKey, ...updatedCategory} = oldCategory;
       yield Promise.all([
         yield call(rsf.database.update, `categories/${oldVerse.category}`, updatedCategory),
@@ -105,8 +146,9 @@ function* updateVerseSaga({ payload }) {
     yield put(updateVerses(key).success);
     yield put(setFormValues());
     yield put(toggleLoading(false));
+    AppToaster.show({ message: 'Verse updated', intent: 'success', timeout: 2000 });
   } catch (e) {
-    console.error(e);
+    AppToaster.show({ message: e.message, intent: 'danger' });
     yield put(updateVerses(key).failure);
     yield put(toggleLoading(false));
   }
@@ -119,10 +161,13 @@ function* deleteVerseSaga({ payload }) {
       yield _deleteFile(verse.bigPicture),
       yield _deleteFile(verse.smallPicture),
       yield _deleteFile(verse.soundFile),
+      yield call(rsf.database.delete, `categories/${verse.category}/${id}`),
       yield call(rsf.database.delete, `verses/${id}`)
     ]);
     yield put(deleteVerse().success);
+    AppToaster.show({ message: 'Verse deleted', intent: 'success', timeout: 2000 });
   } catch (e) {
+    AppToaster.show({ message: e.message, intent: 'danger' });
     yield put(deleteVerse(e).failure);
   }
 }
@@ -140,6 +185,13 @@ function* _deleteFile(path) {
   yield call(rsf.storage.deleteFile, path);
 }
 
+function* setData(path, data) {
+  const ref = getRef(path);
+  const result = yield call([ref, ref.set], data)
+
+  return result;
+}
+
 export default function*() {
   yield all([
     takeLatest(CATEGORIES_GET_REQUEST, syncCategoriesSaga),
@@ -147,5 +199,7 @@ export default function*() {
     takeLatest(VERSES_GET_REQUEST, syncVersesSaga),
     takeLatest(VERSES_DELETE_REQUEST, deleteVerseSaga),
     takeLatest(VERSES_UPDATE_REQUEST, updateVerseSaga),
+    takeLatest(CATEGORIES_CREATE_REQUEST, createCategorySaga),
+    takeLatest(CATEGORIES_DELETE_REQUEST, deleteCategorySaga)
   ]);
 }

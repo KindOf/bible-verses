@@ -4,10 +4,6 @@ import {
 
 const initialState = {
   loading: false,
-  // dialog: {
-  //   id: null,
-  //   open: false
-  // }
   openDialogId: null
 };
 
@@ -26,7 +22,7 @@ const globalReducer = (state = initialState, action) => {
         ...state,
         openDialogId: payload
       }
-  
+
     default:
       return state;
   }
