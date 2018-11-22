@@ -1,16 +1,17 @@
 import { call, put, takeLatest, all, take } from 'redux-saga/effects';
 
 import {
-  getCategories, createVerses, toggleLoading, getVerses
+  getCategories, createVerses, toggleLoading, getVerses, deleteVerse
 } from '../actions';
 
-import { rsf, storage } from '../utils/firebase/firebase';
+import { rsf } from '../utils/firebase/firebase';
 import { resourceRef } from '../utils/firebase/storage';
 
 import {
   CATEGORIES_GET_REQUEST,
   VERSES_CREATE_REQUEST,
   VERSES_GET_REQUEST,
+  VERSES_DELETE_REQUEST
 } from '../constants/actionTypes';
 
 import { generateRandomKey } from '../utils';
@@ -53,21 +54,23 @@ function* addVerse({ payload }) {
     yield put(createVerses(key).success);
     yield put(toggleLoading(false));
   } catch (e) {
-    console.error(e);
     yield put(createVerses(e.message).failure);
     yield put(toggleLoading(false));
   }
 }
 
-function* deleteVerse({ payload }) {
+function* deleteVerseSaga({ payload }) {
   const { id, verse } = payload;
   try {
-    yield _deleteFile(verse.bigPicture);
-    yield _deleteFile(verse.smallPicture);
-    yield _deleteFile(verse.soundPicture);
-    yield call(rsf.database.delete, `verse/${id}`);
+    yield Promise.all([
+      yield _deleteFile(verse.bigPicture),
+      yield _deleteFile(verse.smallPicture),
+      yield _deleteFile(verse.soundFile),
+      yield call(rsf.database.delete, `verses/${id}`)
+    ]);
+    yield put(deleteVerse().success);
   } catch (e) {
-    console.error(e);
+    yield put(deleteVerse(e).failure);
   }
 }
 
@@ -88,6 +91,7 @@ export default function*() {
   yield all([
     takeLatest(CATEGORIES_GET_REQUEST, syncCategoriesSaga),
     takeLatest(VERSES_CREATE_REQUEST, addVerse),
-    takeLatest(VERSES_GET_REQUEST, syncVersesSaga)
+    takeLatest(VERSES_GET_REQUEST, syncVersesSaga),
+    takeLatest(VERSES_DELETE_REQUEST, deleteVerseSaga)
   ]);
 }

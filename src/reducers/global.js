@@ -1,9 +1,14 @@
 import {
-  GLOBAL_TOGGLE_LOADING
+  GLOBAL_TOGGLE_LOADING, GLOBAL_TOGGLE_DIALOG
   } from '../constants/actionTypes';
 
 const initialState = {
-  loading: false
+  loading: false,
+  // dialog: {
+  //   id: null,
+  //   open: false
+  // }
+  openDialogId: null
 };
 
 const globalReducer = (state = initialState, action) => {
@@ -14,6 +19,12 @@ const globalReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: payload
+      }
+
+    case GLOBAL_TOGGLE_DIALOG:
+      return {
+        ...state,
+        openDialogId: payload
       }
   
     default:

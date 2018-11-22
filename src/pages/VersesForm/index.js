@@ -3,13 +3,16 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
 import styled from 'styled-components';
-import { ControlGroup, Button, ButtonGroup } from '@blueprintjs/core';
+import { ControlGroup, Button, ButtonGroup, Menu, MenuItem } from '@blueprintjs/core';
 
-import { PageWrapper } from '../../components';
+import { PageWrapper, DialogModal } from '../../components';
+import { ManageVersesModal } from '../../components/Modals';
 import {
   FormTextInput, FormSwitcher, FormTextArea, FormSelectGroup, FormFileInput
 } from '../../components/Form';
-import { getCategories, createVerses, getVerses } from '../../actions';
+import {
+  getCategories, createVerses, getVerses, deleteVerse, toggleDialog
+} from '../../actions';
 import { generateRandomKey } from '../../utils';
 import { required } from '../../utils/validators';
 
@@ -27,6 +30,8 @@ const StyledControlGroup = styled(ControlGroup)`
   }
 `;
 
+const versesModal = 'verses-modal';
+
 class VersesForm extends Component {
   componentDidMount() {
     const { categoriesGet, versesGet } = this.props;
@@ -41,7 +46,9 @@ class VersesForm extends Component {
   }
 
   render() {
-    const { reset, categories, handleSubmit } = this.props;
+    const {
+      reset, categories, handleSubmit, verses, modalToggle, verseDelete, deleting
+    } = this.props;
     return (
       <PageWrapper>
         <h1>Bible Verses</h1>
@@ -60,6 +67,7 @@ class VersesForm extends Component {
               <Button
                 intent="primary"
                 rightIcon="arrow-down"
+                onClick={() => modalToggle(versesModal)}
               >
                 Load Verse
               </Button>
@@ -161,6 +169,11 @@ class VersesForm extends Component {
             formGroupProps={{ labelInfo: "(720x720)" }}
           />
         </form>
+        <ManageVersesModal
+          verses={verses}
+          deleting={deleting}
+          verseDelete={verseDelete}
+        />
       </PageWrapper>
     )
   }
@@ -168,12 +181,16 @@ class VersesForm extends Component {
 
 const mapStateToProps = state => ({
   categories: Object.keys(state.categories.data).map(cat => ({ label: cat, value: cat })),
+  verses: state.verses.data,
+  deleting: state.verses.deleting,
 });
 
 const mapDispatchToProps = dispatch => ({
   categoriesGet: () => dispatch(getCategories().request),
   createVerse: data => dispatch(createVerses(data).request),
   versesGet: () => dispatch(getVerses().request),
+  verseDelete: data => dispatch(deleteVerse(data).request),
+  modalToggle: id => dispatch(toggleDialog(id)),
 })
 
 export default compose(
