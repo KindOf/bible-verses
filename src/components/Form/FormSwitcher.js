@@ -14,6 +14,7 @@ const FormSwitcher = ({
   >
     <Switch
       {...input}
+      checked={input.value}
     />
   </FormGroup>
 );
