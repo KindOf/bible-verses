@@ -233,7 +233,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   categoriesGet: () => dispatch(getCategories().request),
-  categoryCreate: ({ key }) => dispatch(createCategory(key).request),
+  categoryCreate: ({ key }) => dispatch(createCategory(key.toLowerCase()).request),
   categoryDelete: data => dispatch(deleteCategory(data).request),
   createVerse: data => dispatch(createVerses(data).request),
   verseUpdate: data => dispatch(updateVerses(data).request),
