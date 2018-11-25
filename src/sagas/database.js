@@ -126,10 +126,17 @@ function* updateVerseSaga({ payload }) {
     }
 
     if (typeof soundFile !== 'string') {
-      const soundPicturePath = `Audio/${generateRandomKey()}-${smallPicture[0].name}`;
-      verse.soundFile = soundPicturePath;
+      const soundFilePath = `Audio/${generateRandomKey()}-${soundFile[0].name}`;
+      verse.soundFile = soundFilePath;
+      if (oldVerse.soundFile !== '') {
+        yield _deleteFile(oldVerse.soundFile);
+      }
+      yield _uploadFile(soundFile[0], soundFilePath);
+    }
+
+    if (soundFile === '' && oldVerse.soundFile !== '') {
       yield _deleteFile(oldVerse.soundFile);
-      yield _uploadFile(soundFile[0], soundPicturePath);
+      verse.soundFile = '';
     }
 
     if (oldVerse.category !== verse.category) {

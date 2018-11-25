@@ -12,7 +12,7 @@ import {
 import {
   getCategories, createVerses, getVerses, deleteVerse, toggleDialog, setFormValues, updateVerses, createCategory, deleteCategory
 } from '../../actions';
-import { required } from '../../utils/validators';
+import { required, requiredFile } from '../../utils/validators';
 
 const FlexBox = styled.div`
   display: flex;
@@ -22,7 +22,7 @@ const FlexBox = styled.div`
 
 const StyledTickIcon = styled(Icon)`
   && {
-    margin-left: 16px;
+    margin: 0 16px;
   }
 `;
 
@@ -60,7 +60,7 @@ class VersesForm extends Component {
     const {
       categoriesTitles, categories, handleSubmit, verses, modalToggle, verseDelete, deleting, loadVersesForm,
       isBigPicturePresent, isSmallPicturePresent, isSoundFilePresent, reset, categoryCreate,
-      categoryDelete
+      categoryDelete, change
     } = this.props;
     return (
       <PageWrapper>
@@ -150,7 +150,18 @@ class VersesForm extends Component {
             formGroupProps={{
               labelInfo: (
                 <span className="bp3-text-muted">
-                  {isSoundFilePresent && <StyledTickIcon icon='tick' intent='success' />}
+                  {isSoundFilePresent && (
+                    <>
+                      <StyledTickIcon icon='tick' intent='success' />
+                      <Button
+                        minimal
+                        intent="danger"
+                        icon="trash"
+                        text="remove file"
+                        onClick={() => change('soundFile', '')}
+                      />
+                    </>
+                  )}
                 </span>
               )
             }}
@@ -184,6 +195,7 @@ class VersesForm extends Component {
                 </span>
               )
             }}
+            validate={[ requiredFile ]}
           />
           <Field
             fill
@@ -199,6 +211,7 @@ class VersesForm extends Component {
                 </span>
               )
             }}
+            validate={[ requiredFile ]}
           />
         </form>
         <ManageVersesModal
